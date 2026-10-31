@@ -51,7 +51,12 @@ Only Python's standard library is used.
 ```text
 python -m pytest                                     # decoding, discovery and the link, no Blender
 blender --background --factory-startup --python tests/blender_smoke.py   # the scene, in Blender
+python tests/e2e_solidcraft.py PORT                  # the link against a running SolidCraft
+blender --background --factory-startup --python tests/blender_live.py -- PORT [OUT_DIR]   # both
 ```
+
+The last two change the design open in that SolidCraft: start one for them, for example
+`solidcraft --sample --control 27999`.
 
 ## Licence
 
