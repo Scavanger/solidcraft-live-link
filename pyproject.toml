@@ -1,0 +1,8 @@
+# Only for the tests: Blender installs the add-on from blender_manifest.toml.
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+pythonpath = ["tests"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140

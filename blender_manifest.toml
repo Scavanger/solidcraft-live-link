@@ -1,0 +1,18 @@
+schema_version = "1.0.0"
+
+id = "solidcraft_link"
+version = "0.1.0"
+name = "SolidCraft Live Link"
+tagline = "Follow a SolidCraft design live, as clean quad-dominant meshes"
+maintainer = "Lemontree-Softworks"
+type = "add-on"
+
+tags = ["Import-Export", "Modeling", "Mesh"]
+
+blender_version_min = "4.2.0"
+
+license = ["SPDX:GPL-3.0-or-later"]
+
+[permissions]
+network = "Connects to SolidCraft running on this computer (127.0.0.1) to receive the design"
+files = "Reads SolidCraft's control-channel port and token files to connect"
