@@ -1,5 +1,8 @@
 # SolidCraft Live Link for Blender
 
+[![CI](https://github.com/Scavanger/solidcraft-live-link/actions/workflows/ci.yml/badge.svg)](https://github.com/Scavanger/solidcraft-live-link/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Scavanger/solidcraft-live-link)](https://github.com/Scavanger/solidcraft-live-link/releases/latest)
+
 Follow the design open in [SolidCraft](https://github.com/tangency-labs/solidcraft) live in
 Blender, as meshes ready to texture, render or prepare for a game:
 
@@ -19,7 +22,7 @@ Blender only reads: the design is never changed from here.
 
 Requires Blender 4.2 or later and a SolidCraft with the live link (`live.meshes`).
 
-1. Download `solidcraft_link-<version>.zip` from the [latest release](../../releases/latest).
+1. Download `solidcraft_link-<version>.zip` from the [latest release](https://github.com/Scavanger/solidcraft-live-link/releases/latest).
 2. In Blender, **Edit → Preferences → Get Extensions → Install from Disk…** and choose the zip.
 3. In the 3D viewport press **N** and open the **SolidCraft** tab.
 

@@ -6,6 +6,7 @@ name = "SolidCraft Live Link"
 tagline = "Follow a SolidCraft design live, as clean quad-dominant meshes"
 maintainer = "Lemontree-Softworks"
 type = "add-on"
+website = "https://github.com/Scavanger/solidcraft-live-link"
 
 tags = ["Import-Export", "Modeling", "Mesh"]
 
