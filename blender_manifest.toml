@@ -14,5 +14,16 @@ blender_version_min = "4.2.0"
 license = ["SPDX:GPL-3.0-or-later"]
 
 [permissions]
-network = "Connects to SolidCraft running on this computer (127.0.0.1) to receive the design"
-files = "Reads SolidCraft's control-channel port and token files to connect"
+network = "Receives the design from SolidCraft on this computer"
+files = "Reads SolidCraft's port and token files to connect"
+
+# What `blender --command extension build` leaves out of the release zip.
+[build]
+paths_exclude_pattern = [
+  "__pycache__/",
+  "/.*",
+  "/dist/",
+  "/tests/",
+  "/pyproject.toml",
+  "*.zip",
+]

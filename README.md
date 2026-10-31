@@ -19,7 +19,7 @@ Blender only reads: the design is never changed from here.
 
 Requires Blender 4.2 or later and a SolidCraft with the live link (`live.meshes`).
 
-1. Zip this folder (or download a release zip).
+1. Download `solidcraft_link-<version>.zip` from the [latest release](../../releases/latest).
 2. In Blender, **Edit → Preferences → Get Extensions → Install from Disk…** and choose the zip.
 3. In the 3D viewport press **N** and open the **SolidCraft** tab.
 
@@ -57,6 +57,17 @@ blender --background --factory-startup --python tests/blender_live.py -- PORT [O
 
 The last two change the design open in that SolidCraft: start one for them, for example
 `solidcraft --sample --control 27999`.
+
+Every push and pull request runs the CI (`.github/workflows/ci.yml`): ruff, the tests above
+without Blender on Linux, Windows and macOS, and in Blender 4.2 and 5.2 the scene test, the
+extension build and an install of the built zip. A pull request's zip is attached to its run.
+
+## Release
+
+Raise `version` in `blender_manifest.toml` and merge it into `main`: the release workflow runs
+the CI, builds `solidcraft_link-<version>.zip` with Blender's `extension build`, tags `v<version>`
+and publishes a GitHub release with the zip, its SHA-256 and notes from the merged pull requests.
+Pushing a tag `v<version>` that matches the manifest does the same.
 
 ## Licence
 

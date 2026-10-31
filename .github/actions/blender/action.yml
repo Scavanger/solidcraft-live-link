@@ -1,0 +1,47 @@
+name: Blender
+description: Download the newest Linux release of a Blender series (cached) and put it on PATH
+inputs:
+  series:
+    description: Blender series, such as 4.2
+    required: true
+outputs:
+  version:
+    description: The Blender release downloaded, such as blender-4.2.9-linux-x64
+    value: ${{ steps.find.outputs.name }}
+runs:
+  using: composite
+  steps:
+    - id: find
+      shell: bash
+      env:
+        SERIES: ${{ inputs.series }}
+      run: |
+        pattern="blender-${SERIES//./\\.}\.[0-9]+-linux-x64\.tar\.xz"
+        file=$(curl -fsSL --retry 3 "https://download.blender.org/release/Blender${SERIES}/" | grep -oE "$pattern" | sort -uV | tail -n 1)
+        if [ -z "$file" ]; then
+          echo "::error::no Linux build of Blender $SERIES on download.blender.org"
+          exit 1
+        fi
+        echo "file=$file" >> "$GITHUB_OUTPUT"
+        echo "name=${file%.tar.xz}" >> "$GITHUB_OUTPUT"
+        echo "dir=$RUNNER_TEMP/${file%.tar.xz}" >> "$GITHUB_OUTPUT"
+    - id: cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.find.outputs.dir }}
+        key: ${{ steps.find.outputs.name }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        SERIES: ${{ inputs.series }}
+        FILE: ${{ steps.find.outputs.file }}
+      run: curl -fsSL --retry 3 "https://download.blender.org/release/Blender${SERIES}/${FILE}" | tar -xJ -C "$RUNNER_TEMP"
+    - shell: bash
+      env:
+        DIR: ${{ steps.find.outputs.dir }}
+      run: |
+        # What Blender needs to start without a display.
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq libegl1 libgl1 libsm6 libxfixes3 libxi6 libxkbcommon0 libxrender1 libxxf86vm1 > /dev/null
+        echo "$DIR" >> "$GITHUB_PATH"
+        "$DIR/blender" --version | head -n 1

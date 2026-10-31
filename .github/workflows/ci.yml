@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  # github.workflow is the caller's when the release runs this, so the two never wait on each other.
+  group: ${{ github.workflow }}-ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff==0.16.8
+      - run: ruff check --output-format github .
+      - run: ruff format --check .
+
+  test:
+    name: test (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Python 3.11 is Blender 4.2's, 3.13 Blender 5's.
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install "pytest>=8"
+      - run: python -m pytest -q
+
+  blender:
+    name: blender ${{ matrix.series }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest Blender the manifest allows, and the current one.
+        series: ["4.2", "5.2"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/blender
+        with:
+          series: ${{ matrix.series }}
+      - name: Scene test
+        run: blender --background --factory-startup --python-exit-code 1 --python tests/blender_smoke.py
+      - name: Validate and build the extension
+        run: |
+          blender --factory-startup --command extension validate .
+          mkdir -p dist
+          blender --factory-startup --command extension build --source-dir . --output-dir dist
+          blender --factory-startup --command extension validate dist/solidcraft_link-*.zip
+      - name: Install the zip as a user would
+        env:
+          BLENDER_USER_RESOURCES: ${{ runner.temp }}/blender-user
+        run: |
+          blender --command extension install-file --repo user_default --enable dist/solidcraft_link-*.zip
+          blender --background --python-exit-code 1 --python tests/blender_installed.py
+      - if: matrix.series == '4.2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: solidcraft_link-${{ github.sha }}
+          path: dist/*.zip
+          retention-days: 14

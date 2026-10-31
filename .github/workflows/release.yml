@@ -1,0 +1,75 @@
+name: Release
+
+# A release is made when the version in blender_manifest.toml changes on main (no tag needed), or
+# when a tag vX.Y.Z matching that version is pushed. Either way the full CI runs first.
+on:
+  push:
+    branches: [main]
+    paths: [blender_manifest.toml]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      release: ${{ steps.check.outputs.release }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('blender_manifest.toml', 'rb'))['version'])")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+              echo "::error::tag $GITHUB_REF_NAME does not match the manifest's version $version"
+              exit 1
+            fi
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+            echo "::notice::v$version is already released; bump version in blender_manifest.toml for a new one"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  ci:
+    needs: version
+    if: needs.version.outputs.release == 'true'
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: [version, ci]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      # Built with the oldest Blender the manifest allows.
+      - uses: ./.github/actions/blender
+        with:
+          series: "4.2"
+      - name: Build
+        run: |
+          mkdir -p dist
+          blender --factory-startup --command extension build --source-dir . --output-dir dist
+          blender --factory-startup --command extension validate "dist/solidcraft_link-$VERSION.zip"
+          (cd dist && sha256sum "solidcraft_link-$VERSION.zip" > "solidcraft_link-$VERSION.zip.sha256")
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$VERSION" dist/* \
+            --target "$GITHUB_SHA" \
+            --title "SolidCraft Live Link $VERSION" \
+            --generate-notes
