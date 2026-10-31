@@ -23,7 +23,7 @@ jobs:
       version: ${{ steps.check.outputs.version }}
       release: ${{ steps.check.outputs.release }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: check
         run: |
           version=$(python3 -c "import tomllib; print(tomllib.load(open('blender_manifest.toml', 'rb'))['version'])")
@@ -54,7 +54,7 @@ jobs:
     env:
       VERSION: ${{ needs.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Built with the oldest Blender the manifest allows.
       - uses: ./.github/actions/blender
         with:
