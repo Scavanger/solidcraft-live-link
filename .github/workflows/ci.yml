@@ -72,7 +72,7 @@ jobs:
           blender --command extension install-file --repo user_default --enable dist/solidcraft_link-*.zip
           blender --background --python-exit-code 1 --python tests/blender_installed.py
       - if: matrix.series == '4.2'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: solidcraft_link-${{ github.sha }}
           path: dist/*.zip
