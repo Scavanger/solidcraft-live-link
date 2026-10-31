@@ -3,6 +3,8 @@
 addopts = "--import-mode=importlib"
 pythonpath = ["tests"]
 testpaths = ["tests"]
+# A leaked socket or a thread that died shows as a warning; fail on it rather than flake later.
+filterwarnings = ["error"]
 
 [tool.ruff]
 line-length = 140

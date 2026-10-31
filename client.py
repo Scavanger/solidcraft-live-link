@@ -95,26 +95,29 @@ class Client:
 
     def _read(self, sock):
         try:
-            stream = sock.makefile("rb")
-            for raw in stream:
-                try:
-                    msg = json.loads(raw)
-                except ValueError:
-                    continue
-                if not isinstance(msg, dict):
-                    continue
-                if "event" in msg and "id" not in msg:
-                    self._queue.put(("event", msg))
-                    continue
-                with self._lock:
-                    callback, meshes = self._waiting.pop(msg.get("id"), (None, False))
-                if meshes:
-                    _decode_meshes(msg)
-                self._queue.put(("reply", callback, msg))
-            self._queue.put(("closed", "SolidCraft closed the connection"))
-        except OSError as e:
-            if self._sock is sock:
-                self._queue.put(("closed", str(e)))
+            with sock.makefile("rb") as stream:
+                for raw in stream:
+                    try:
+                        msg = json.loads(raw)
+                    except ValueError:
+                        continue
+                    if not isinstance(msg, dict):
+                        continue
+                    if "event" in msg and "id" not in msg:
+                        self._queue.put(("event", msg))
+                        continue
+                    with self._lock:
+                        callback, meshes = self._waiting.pop(msg.get("id"), (None, False))
+                    if meshes:
+                        _decode_meshes(msg)
+                    self._queue.put(("reply", callback, msg))
+            reason = "SolidCraft closed the connection"
+        except (OSError, ValueError) as e:  # ValueError: the stream was closed under the read
+            reason = str(e)
+        # Only a connection SolidCraft ended is reported: one closed here (a disconnect, or a new
+        # connect) must not close the connection that replaced it.
+        if self._sock is sock:
+            self._queue.put(("closed", reason))
 
 
 def _decode_meshes(reply):

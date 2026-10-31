@@ -19,7 +19,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
@@ -37,7 +37,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python: ["3.11", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
@@ -53,7 +53,7 @@ jobs:
         # The oldest Blender the manifest allows, and the current one.
         series: ["4.2", "5.2"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/blender
         with:
           series: ${{ matrix.series }}
@@ -72,7 +72,7 @@ jobs:
           blender --command extension install-file --repo user_default --enable dist/solidcraft_link-*.zip
           blender --background --python-exit-code 1 --python tests/blender_installed.py
       - if: matrix.series == '4.2'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: solidcraft_link-${{ github.sha }}
           path: dist/*.zip

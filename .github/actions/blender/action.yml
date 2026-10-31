@@ -26,7 +26,7 @@ runs:
         echo "name=${file%.tar.xz}" >> "$GITHUB_OUTPUT"
         echo "dir=$RUNNER_TEMP/${file%.tar.xz}" >> "$GITHUB_OUTPUT"
     - id: cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ${{ steps.find.outputs.dir }}
         key: ${{ steps.find.outputs.name }}
