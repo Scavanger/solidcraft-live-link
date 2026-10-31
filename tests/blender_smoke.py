@@ -25,7 +25,14 @@ def load():
 
 
 def result(meshes, objects):
-    return {"document_id": "d-1", "unit": "mm", "up": "Z", "components": [{"id": 3, "name": "Bracket", "parent": 0}], "objects": objects, "meshes": meshes}
+    return {
+        "document_id": "d-1",
+        "unit": "mm",
+        "up": "Z",
+        "components": [{"id": 3, "name": "Bracket", "parent": 0}],
+        "objects": objects,
+        "meshes": meshes,
+    }
 
 
 def obj(key, mesh, x=0.0, component=3, color=(32, 160, 128), faces=None):
@@ -44,8 +51,8 @@ def obj(key, mesh, x=0.0, component=3, color=(32, 160, 128), faces=None):
 
 def main():
     load()
-    from solidcraft_link import decode, sync
     from meshes import box
+    from solidcraft_link import decode, sync
 
     def check(cond, what):
         if not cond:
@@ -58,7 +65,10 @@ def main():
     a, b = bpy.data.objects["Body1"], bpy.data.objects["Body1 (K:2)"]
     me = a.data
     check(a.data == b.data, "placements share one mesh")
-    check((len(me.vertices), len(me.polygons), len(me.edges)) == (8, 6, 12), f"8/6/12, got {len(me.vertices)}/{len(me.polygons)}/{len(me.edges)}")
+    check(
+        (len(me.vertices), len(me.polygons), len(me.edges)) == (8, 6, 12),
+        f"8/6/12, got {len(me.vertices)}/{len(me.polygons)}/{len(me.edges)}",
+    )
     check(abs(b.matrix_world.translation.x - 0.03) < 1e-9, f"30 mm is 0.03 m, got {b.matrix_world.translation.x}")
     xs = sorted({round(v.co.x, 6) for v in me.vertices})
     check(xs == [0.0, 0.01], f"10 mm box in metres, got {xs}")
@@ -72,7 +82,9 @@ def main():
     check(me.has_custom_normals, "custom normals set")
     check(a.users_collection[0].name == "Bracket [3]", f"component collection, got {a.users_collection[0].name}")
     check(a.users_collection[0].name in bpy.data.collections["SolidCraft"].children, "under SolidCraft")
-    check(a.material_slots[0].link == "OBJECT" and a.material_slots[0].material != b.material_slots[0].material, "each placement its own look")
+    check(
+        a.material_slots[0].link == "OBJECT" and a.material_slots[0].material != b.material_slots[0].material, "each placement its own look"
+    )
     check(any(p.material_index == 1 for p in me.polygons), "the red face has its own slot")
     check(sync.held_mesh_keys() == {"k1"}, f"held keys, got {sync.held_mesh_keys()}")
 

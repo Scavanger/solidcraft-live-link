@@ -124,7 +124,7 @@ def main():
     for command, params in steps:
         before = plate_key()
         cmd.run(command, params)
-        wait(lambda: plate_key() not in (None, before), command)
+        wait(lambda before=before: plate_key() not in (None, before), command)
         verts, euler = inspect(command)
     check(euler == 0, "a plate with a hole has genus one")
     check(abs(bpy.data.objects["Plate"].dimensions.x - 0.04) < 1e-6, "40 mm is 0.04 m")

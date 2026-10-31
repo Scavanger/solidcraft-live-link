@@ -14,7 +14,7 @@ def box(key="k1", size=(10.0, 20.0, 30.0), origin=(5.0, 10.0, 15.0)):
     corners = [(x * a, y * b, z * c) for z in (0, 1) for y in (0, 1) for x in (0, 1)]
     faces = [[0, 2, 3, 1], [4, 5, 7, 6], [0, 1, 5, 4], [2, 6, 7, 3], [0, 4, 6, 2], [1, 3, 7, 5]]
     normals = [(0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0), (-1, 0, 0), (1, 0, 0)]
-    positions = [v - o for p in corners for v, o in zip(p, origin)]
+    positions = [v - o for p in corners for v, o in zip(p, origin, strict=True)]
     loops = [i for f in faces for i in f]
     loop_normals = [v for n in normals for _ in range(4) for v in n]
     edges = [(0, 1), (2, 3), (4, 5), (6, 7), (0, 2), (1, 3), (4, 6), (5, 7), (0, 4), (1, 5), (2, 6), (3, 7)]

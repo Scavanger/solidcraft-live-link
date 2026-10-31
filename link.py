@@ -81,7 +81,11 @@ class Link:
     def _on_capabilities(self, reply):
         version = (reply.get("result") or {}).get("live_meshes") if reply.get("ok") else None
         if version != SUPPORTED_MESH_VERSION:
-            self.status = "This SolidCraft has no live link (update SolidCraft)" if version is None else f"SolidCraft sends mesh version {version}; update the add-on"
+            self.status = (
+                "This SolidCraft has no live link (update SolidCraft)"
+                if version is None
+                else f"SolidCraft sends mesh version {version}; update the add-on"
+            )
             self.client.close()
             return
         self.client.request("control.subscribe", {}, self._on_subscribed)

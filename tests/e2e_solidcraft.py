@@ -109,7 +109,11 @@ def main():
         before = scene.updates
         started = time.monotonic()
         cmd.run(command, params)
-        wait(link, lambda: scene.updates > before and any(o["key"] == "Plate" for o in scene.objects) and scene.objects[0]["mesh"] in scene.meshes)
+
+        def arrived(before=before):
+            return scene.updates > before and any(o["key"] == "Plate" for o in scene.objects) and scene.objects[0]["mesh"] in scene.meshes
+
+        wait(link, arrived)
         m = scene.mesh_of("Plate")
         flags = list(m.edge_flags)
         print(

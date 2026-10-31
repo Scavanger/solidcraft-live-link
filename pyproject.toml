@@ -6,3 +6,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 140
+target-version = "py311"  # Blender 4.2's Python
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

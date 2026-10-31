@@ -5,9 +5,9 @@ import socket
 import threading
 import time
 
+from meshes import box
 from solidcraft_link import decode
 from solidcraft_link.link import Link
-from meshes import box
 
 TOKEN = "cd" * 32
 
@@ -44,8 +44,25 @@ class FakeSolidCraft:
                 have = set(req["params"]["params"].get("have", []))
                 key = f"box{self.revision}"
                 meshes = [] if key in have else [box(key)]
-                objects = [{"key": "Body1", "definition": "Body1", "component": 0, "matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "mesh": key, "visible": True, "color": [10, 20, 30], "opacity": 1.0}]
-                self._send({"id": req["id"], "ok": True, "result": {"document_id": "d-1", "unit": "mm", "up": "Z", "components": [], "objects": objects, "meshes": meshes}})
+                objects = [
+                    {
+                        "key": "Body1",
+                        "definition": "Body1",
+                        "component": 0,
+                        "matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                        "mesh": key,
+                        "visible": True,
+                        "color": [10, 20, 30],
+                        "opacity": 1.0,
+                    }
+                ]
+                self._send(
+                    {
+                        "id": req["id"],
+                        "ok": True,
+                        "result": {"document_id": "d-1", "unit": "mm", "up": "Z", "components": [], "objects": objects, "meshes": meshes},
+                    }
+                )
 
     def change(self):
         self.revision += 1

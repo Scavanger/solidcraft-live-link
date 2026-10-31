@@ -1,9 +1,8 @@
 import base64
 
 import pytest
-
-from solidcraft_link import decode
 from meshes import b64, box
+from solidcraft_link import decode
 
 
 def test_a_box_reads_back():
