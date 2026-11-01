@@ -8,7 +8,8 @@ Blender, as meshes ready to texture, render or prepare for a game:
 
 - **Live**: every change in SolidCraft (an edit, a parameter, undo, a body shown or hidden) arrives
   within a moment; only the bodies that changed are sent again.
-- **Clean topology**: welded, closed meshes; one n-gon per flat face, quads on cylinders, cones,
+- **Clean topology**: welded, closed meshes; one n-gon per flat face (a few convex n-gons where
+  it has holes), quads on cylinders, cones,
   fillets and revolved faces, triangles only where a surface needs them (a sphere's poles).
 - **CAD faces kept**: every polygon carries its B-rep face (`sc_face`), every face boundary is a
   UV seam, creases are marked sharp, tangent joins are not, and corners take the true surface
